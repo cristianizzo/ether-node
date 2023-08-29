@@ -34,7 +34,8 @@ services:
     ports:
       - "4000:4000"
       - "13000:13000"
-    command: ["--http-web3provider=http://ethereum-node:8545"]
+    environment:
+      - CONFIG_http-web3provider=http://ethereum-node:8545
     restart: unless-stopped
 
 volumes:
