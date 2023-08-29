@@ -26,7 +26,6 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus/data:/prometheus
-      - prometheus-storage:/prometheus  # Data persistence for Prometheus
     restart: unless-stopped
   prysm-beacon:
     image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest
