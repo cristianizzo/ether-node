@@ -36,7 +36,7 @@ services:
       - "13000:13000"
     environment:
       - CONFIG_http-web3provider=http://ethereum-node:8545
-      - CONFIG_accept-terms-of-use=true
+    command: ["--accept-terms-of-use"]
     restart: unless-stopped
 
 volumes:
