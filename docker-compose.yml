@@ -8,15 +8,35 @@ services:
       - "30303:30303"
     volumes:
       - /ethereum-data:/root/.ethereum
+    restart: unless-stopped
   grafana:
-    image: grafana/grafana:latest
+    build: ./grafana
     ports:
       - "3000:3000"
     volumes:
       - ./monitoring/grafana:/etc/grafana
+      - grafana-storage:/var/lib/grafana  # Data persistence for Grafana
+    restart: unless-stopped
   prometheus:
     image: prom/prometheus:latest
     ports:
       - "9090:9090"
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-storage:/prometheus  # Data persistence for Prometheus
+    restart: unless-stopped
+  prysm-beacon:
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest
+    depends_on:
+      - ethereum-node
+    ports:
+      - "4000:4000"
+      - "13000:13000"
+    command: ["--http-web3provider=http://ethereum-node:8545"]
+    restart: unless-stopped
+
+volumes:
+  grafana-storage:  # Define the Grafana storage volume
+    driver: local
+  prometheus-storage:  # Define the Prometheus storage volume
+    driver: local
