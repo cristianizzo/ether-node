@@ -14,7 +14,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./monitoring/grafana:/etc/grafana
+      - /home/ubuntu/ether-node/monitoring/grafana:/etc/grafana
       - grafana-storage:/var/lib/grafana  # Data persistence for Grafana
     restart: unless-stopped
   prometheus:
@@ -22,7 +22,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /home/ubuntu/ether-node/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-storage:/prometheus  # Data persistence for Prometheus
     restart: unless-stopped
   prysm-beacon:
