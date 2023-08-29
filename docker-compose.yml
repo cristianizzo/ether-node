@@ -14,7 +14,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - /home/ubuntu/ether-node/monitoring/grafana:/etc/grafana
+      - /home/ubuntu/ether-node/monitoring/grafana/grafana.ini:/etc/grafana/grafana.ini
       - grafana-storage:/var/lib/grafana  # Data persistence for Grafana
     restart: unless-stopped
   prometheus:
