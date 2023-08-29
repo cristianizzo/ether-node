@@ -10,3 +10,5 @@ RUN grafana-cli plugins install grafana-worldmap-panel && \
 
 # Switch back to the grafana user
 USER grafana
+
+COPY config.ini /etc/grafana/grafana.ini
