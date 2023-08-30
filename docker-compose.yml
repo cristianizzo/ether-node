@@ -1,90 +1,81 @@
-version: '3'
+version: "3.8"
+
 services:
-  # Ethereum Node Service
-  ethereum-node:
-    container_name: ethereum-node
-    image: ethereum/client-go:latest  # Using the latest Geth image
+  # Ethereum Geth Node Configuration
+  geth:
+    image: ethereum/client-go  # Docker image for Geth
+    pull_policy: always  # Always pull the latest image
+    container_name: geth  # Container name
+    restart: unless-stopped  # Restart policy
     ports:
       - "8545:8545"  # JSON-RPC HTTP service
       - "8546:8546"  # JSON-RPC WebSocket service
       - "8551:8551"  # Execution client API (used by beacon chain)
       - "30303:30303"  # P2P communication
       - "30303:30303/udp"  # P2P communication (UDP)
+    volumes:
+      - /ethereum-data:/root/.ethereum  # Volume for Ethereum data
+    stop_signal: SIGINT  # Stop signal
+    stop_grace_period: 2m  # Grace period for stopping
+    healthcheck:  # Health check configuration
+      test: [ "CMD-SHELL", "geth attach --exec eth.blockNumber" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     command:
       - --http
+      - --http.api=eth,net,web3,engine,admin
       - --http.addr=0.0.0.0
-      - --http.port=8545
+      - --http.vhosts=*
+      - --http.corsdomain=*
       - --ws
+      - --ws.origins=*
       - --ws.addr=0.0.0.0
-      - --ws.port=8546
-      - --graphql  # Enabling GraphQL
-    volumes:
-      - /ethereum-data:/root/.ethereum
-    restart: unless-stopped
-    networks:
-      - node-network
+      - --ws.api=eth,net,web3
+      - --graphql
+      - --graphql.corsdomain=*
+      - --graphql.vhosts=*
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.vhosts=*
+      - --authrpc.jwtsecret=/root/.ethereum/jwt.hex
+      - --authrpc.port=8551
+      - --txlookuplimit=0
+    logging:  # Logging options
+      driver: json-file
+      options:
+        max-size: 2m
+        max-file: 10
 
-  # Beacon Chain Service (Prysm)
-  beacon-chain:
-    container_name: beacon-chain
-    image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest
-    depends_on:
-      - ethereum-node
+  # Prysm Beacon Chain Configuration
+  prysm:
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain  # Docker image for Prysm
+    pull_policy: always  # Always pull the latest image
+    container_name: beacon  # Container name
+    restart: unless-stopped  # Restart policy
+    stop_grace_period: 2m  # Grace period for stopping
+    volumes:
+      - beacon-data:/path/in/container  # Volume for Prysm data
+      - /ethereum-data:/root/.ethereum  # Shared volume for Ethereum data
+    depends_on:  # Dependency on Geth
+      geth:
+        condition: service_healthy
     ports:
       - "4000:4000"  # gRPC server for Prysm
-      - "13000:13000"  # P2P communication for Prysm
-    environment:
-      - CONFIG_http-web3provider=ws://ethereum-node:8546  # Web3 provider via WebSocket
-    command: [
-      "--accept-terms-of-use",
-      "--execution-endpoint=http://ethereum-node:8551"  # execution endpoint
-    ]
-    volumes:
-      - beacon-data:/path/in/container
-    restart: unless-stopped
-    networks:
-      - node-network
-
-  # Grafana Service for Monitoring
-  grafana:
-    container_name: grafana
-    hostname: grafana
-    build: ./grafana
-    ports:
-      - "3000:3000"  # Grafana web interface
-    environment:
-      - GF_SERVER_HTTP_PORT=3000
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    depends_on:
-      - prometheus
-    volumes:
-      - ./grafana/data:/var/lib/grafana
-    restart: unless-stopped
-
-  # Prometheus Service for Metrics
-  prometheus:
-    container_name: prometheus
-    hostname: prometheus
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"  # Prometheus web interface
+      - "3500:3500"  # P2P communication for Prysm
     command:
-      - '--config.file=/prometheus/prometheus.yml'
-    volumes:
-      - ./prometheus/data:/prometheus
-    restart: unless-stopped
-
-networks:
-  node-network:
-    driver: bridge
-
-volumes:
-  grafana-storage:
-    driver: local
-  prometheus-storage:
-    driver: local
-  ethereum-data:
-    driver: local
-  beacon-data:
-    driver: local
+      - --accept-terms-of-use
+      - --datadir=/data
+      - --disable-monitoring
+      - --rpc-host=0.0.0.0
+      - --execution-endpoint=http://geth:8551
+      - --jwt-secret=/geth/jwt.hex
+      - --rpc-host=0.0.0.0
+      - --rpc-port=4000
+      - --grpc-gateway-corsdomain=*
+      - --grpc-gateway-host=0.0.0.0
+      - --grpc-gateway-port=3500
+    logging:  # Logging options
+      driver: json-file
+      options:
+        max-size: 2m
+        max-file: 10
