@@ -14,8 +14,6 @@ services:
     volumes:
       - /ethereum-data:/root/.ethereum
     restart: unless-stopped
-    networks:
-      - eth-net
 
   # Beacon Chain Service (Prysm)
   beacon-chain:
@@ -28,6 +26,7 @@ services:
       - "4000:4000"  # gRPC server for Prysm
       - "30303:30303/tcp"  # P2P communication TCP
       - "30303:30303/udp"  # P2P communication UDP
+      - "13000:13000"  # P2P communication for Prysm
     environment:
       - CONFIG_http-web3provider=ws://ethereum-node:8546  # Web3 provider via WebSocket
     command: [
@@ -37,8 +36,6 @@ services:
     volumes:
       - beacon-data:/path/in/container
     restart: unless-stopped
-    networks:
-      - eth-net
 
   # Grafana Service for Monitoring
   grafana:
@@ -64,13 +61,11 @@ services:
     image: prom/prometheus:latest
     ports:
       - "9090:9090"  # Prometheus web interface
+    command:
+      - '--config.file=/prometheus/prometheus.yml'
     volumes:
       - ./prometheus/data:/prometheus
     restart: unless-stopped
-
-networks:
-  eth-net:
-    driver: bridge
 
 volumes:
   grafana-storage:
