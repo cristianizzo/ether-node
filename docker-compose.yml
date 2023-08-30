@@ -2,6 +2,7 @@ version: '3'
 services:
   # Ethereum Node Service
   ethereum-node:
+    container_name: ethereum-node
     build: ./node
     ports:
       - "8545:8545"  # JSON-RPC HTTP service
@@ -17,6 +18,7 @@ services:
 
   # Grafana Service for Monitoring
   grafana:
+    container_name: grafana
     build: ./grafana
     ports:
       - "3000:3000"  # Grafana web interface
@@ -30,6 +32,7 @@ services:
 
   # Prometheus Service for Metrics
   prometheus:
+    container_name: prometheus
     image: prom/prometheus:latest
     ports:
       - "9090:9090"  # Prometheus web interface
@@ -39,6 +42,7 @@ services:
 
   # Prysm Beacon Chain Service
   prysm-beacon:
+    container_name: prysm-beacon
     image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest
     depends_on:
       - ethereum-node
@@ -46,7 +50,7 @@ services:
       - "4000:4000"  # gRPC server for Prysm
       - "13000:13000"  # P2P communication for Prysm
     environment:
-      - CONFIG_http-web3provider=ws://localhost:8546  # Web3 provider via WebSocket
+      - CONFIG_http-web3provider=ws://ethereum-node:8546  # Web3 provider via WebSocket
     command: ["--accept-terms-of-use"]
     volumes:
       - beacon-data:/path/in/container
