@@ -3,22 +3,47 @@ services:
   # Ethereum Node Service
   ethereum-node:
     container_name: ethereum-node
+    hostname: ethereum-node
     build: ./node
     ports:
       - "8545:8545"  # JSON-RPC HTTP service
       - "8546:8546"  # JSON-RPC WebSocket service
       - "8551:8551"  # Execution client API (used by beacon chain)
-      - "30303:30303"  # P2P communication
-      - "30303:30303/udp"  # P2P communication (UDP)
+      - "30303:30303/tcp"  # P2P communication TCP
+      - "30303:30303/udp"  # P2P communication UDP
     volumes:
       - /ethereum-data:/root/.ethereum
     restart: unless-stopped
     networks:
       - eth-net
 
+  # Beacon Chain Service (Prysm)
+  beacon-chain:
+    container_name: beacon-chain
+    hostname: beacon-chain
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest
+    depends_on:
+      - ethereum-node
+    ports:
+      - "4000:4000"  # gRPC server for Prysm
+      - "30303:30303/tcp"  # P2P communication TCP
+      - "30303:30303/udp"  # P2P communication UDP
+    environment:
+      - CONFIG_http-web3provider=ws://ethereum-node:8546  # Web3 provider via WebSocket
+    command: [
+      "--accept-terms-of-use",
+      "--execution-endpoint=http://ethereum-node:8551"  # execution endpoint
+    ]
+    volumes:
+      - beacon-data:/path/in/container
+    restart: unless-stopped
+    networks:
+      - eth-net
+      -
   # Grafana Service for Monitoring
   grafana:
     container_name: grafana
+    hostname: grafana
     build: ./grafana
     ports:
       - "3000:3000"  # Grafana web interface
@@ -26,6 +51,8 @@ services:
       - GF_SERVER_HTTP_PORT=3000
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
     volumes:
       - ./grafana/data:/var/lib/grafana
     restart: unless-stopped
@@ -33,30 +60,13 @@ services:
   # Prometheus Service for Metrics
   prometheus:
     container_name: prometheus
+    hostname: prometheus
     image: prom/prometheus:latest
     ports:
       - "9090:9090"  # Prometheus web interface
     volumes:
       - ./prometheus/data:/prometheus
     restart: unless-stopped
-
-  # Prysm Beacon Chain Service
-  prysm-beacon:
-    container_name: prysm-beacon
-    image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest
-    depends_on:
-      - ethereum-node
-    ports:
-      - "4000:4000"  # gRPC server for Prysm
-      - "13000:13000"  # P2P communication for Prysm
-    environment:
-      - CONFIG_http-web3provider=ws://ethereum-node:8546  # Web3 provider via WebSocket
-    command: ["--accept-terms-of-use"]
-    volumes:
-      - beacon-data:/path/in/container
-    restart: unless-stopped
-    networks:
-      - eth-net
 
 networks:
   eth-net:
