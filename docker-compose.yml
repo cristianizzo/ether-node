@@ -1,41 +1,82 @@
 version: '3'
 services:
-  # Ethereum Node Configuration
-  ethereum:
-    image: ethereum/client-go:v1.10.23  # Docker image for Ethereum
-    restart: always  # Always restart the container if it stops
-    container_name: ethereum  # Name of the container
+  # Ethereum Node Service
+  ethereum-node:
+    container_name: ethereum-node
+    image: ethereum/client-go:latest  # Using the latest Geth image
     ports:
       - "8545:8545"  # JSON-RPC HTTP service
-      - "30303:30303"  # P2P communication TCP
-      - "30303:30303/udp"  # P2P communication UDP
+      - "8546:8546"  # JSON-RPC WebSocket service
       - "8551:8551"  # Execution client API (used by beacon chain)
+      - "30303:30303"  # P2P communication
+      - "30303:30303/udp"  # P2P communication (UDP)
     command:
-      - --http  # Enable HTTP JSON-RPC API
-      - --graphql  # Enable GraphQL API
-      - --http.addr 0.0.0.0  # Listen address for HTTP
-      - --port 30303  # P2P network port
-      - --http.port 8545  # HTTP JSON-RPC port
-      - --http.corsdomain "*"  # CORS allowed domains
-      - --http.vhosts "*"  # Virtual hosts
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --ws
+      - --ws.addr=0.0.0.0
+      - --ws.port=8546
+      - --graphql  # Enabling GraphQL
     volumes:
-      - ./data/ethereum:/root/.ethereum  # Data volume for Ethereum blockchain
+      - /ethereum-data:/root/.ethereum
+    restart: unless-stopped
 
-  # Lighthouse Beacon Chain Node Configuration
-  lighthouse:
-    container_name: lighthouse  # Name of the container
-    image: sigp/lighthouse:v3.1.0  # Docker image for Lighthouse
-    restart: always  # Always restart the container if it stops
+  # Beacon Chain Service (Prysm)
+  beacon-chain:
+    container_name: beacon-chain
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest
+    depends_on:
+      - ethereum-node
     ports:
-      - "5052:5052"  # HTTP port for Lighthouse
-    command:
-      - lighthouse  # Main command to run Lighthouse
-      - --network  # Specify the network (mainnet in this case)
-      - mainnet
-      - beacon  # Run the beacon chain
-      - --http  # Enable HTTP API
-      - --http-address=0.0.0.0  # Listen address for HTTP
-      - --http-port=5052  # HTTP port
-      - --execution-endpoint=http://ethereum:8551  # Execution endpoint to connect to Ethereum node
+      - "4000:4000"  # gRPC server for Prysm
+      - "13000:13000"  # P2P communication for Prysm
+    environment:
+      - CONFIG_http-web3provider=ws://ethereum-node:8546  # Web3 provider via WebSocket
+    command: [
+      "--accept-terms-of-use",
+      "--execution-endpoint=http://ethereum-node:8551"  # execution endpoint
+    ]
     volumes:
-      - ./data/lighthouse:/root/.lighthouse  # Data volume for Lighthouse blockchain
+      - beacon-data:/path/in/container
+    restart: unless-stopped
+
+  # Grafana Service for Monitoring
+  grafana:
+    container_name: grafana
+    hostname: grafana
+    build: ./grafana
+    ports:
+      - "3000:3000"  # Grafana web interface
+    environment:
+      - GF_SERVER_HTTP_PORT=3000
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+    restart: unless-stopped
+
+  # Prometheus Service for Metrics
+  prometheus:
+    container_name: prometheus
+    hostname: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"  # Prometheus web interface
+    command:
+      - '--config.file=/prometheus/prometheus.yml'
+    volumes:
+      - ./prometheus/data:/prometheus
+    restart: unless-stopped
+
+volumes:
+  grafana-storage:
+    driver: local
+  prometheus-storage:
+    driver: local
+  ethereum-data:
+    driver: local
+  beacon-data:
+    driver: local
