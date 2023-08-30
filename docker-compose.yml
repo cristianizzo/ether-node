@@ -21,6 +21,8 @@ services:
     volumes:
       - /ethereum-data:/root/.ethereum
     restart: unless-stopped
+    networks:
+      - node-network
 
   # Beacon Chain Service (Prysm)
   beacon-chain:
@@ -40,6 +42,8 @@ services:
     volumes:
       - beacon-data:/path/in/container
     restart: unless-stopped
+    networks:
+      - node-network
 
   # Grafana Service for Monitoring
   grafana:
@@ -70,6 +74,10 @@ services:
     volumes:
       - ./prometheus/data:/prometheus
     restart: unless-stopped
+
+networks:
+  node-network:
+    driver: bridge
 
 volumes:
   grafana-storage:
