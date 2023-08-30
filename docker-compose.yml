@@ -2,6 +2,7 @@ version: '3'
 services:
   ethereum-node:
     build: ./node
+    command: "geth --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net --ws --ws.addr 0.0.0.0 --ws.port 8546 --syncmode snap"
     ports:
       - "8545:8545"
       - "8546:8546"
@@ -9,6 +10,7 @@ services:
     volumes:
       - /ethereum-data:/root/.ethereum
     restart: unless-stopped
+
   grafana:
     build: ./grafana
     ports:
@@ -20,6 +22,7 @@ services:
     volumes:
       - ./grafana/data:/var/lib/grafana
     restart: unless-stopped
+
   prometheus:
     image: prom/prometheus:latest
     ports:
@@ -27,6 +30,7 @@ services:
     volumes:
       - ./prometheus/data:/prometheus
     restart: unless-stopped
+
   prysm-beacon:
     image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest
     depends_on:
@@ -40,7 +44,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  grafana-storage:  # Define the Grafana storage volume
+  grafana-storage:
     driver: local
-  prometheus-storage:  # Define the Prometheus storage volume
+  prometheus-storage:
     driver: local
