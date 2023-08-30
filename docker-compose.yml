@@ -3,10 +3,10 @@ version: "3.8"
 services:
   # Ethereum Geth Node Configuration
   geth:
-    image: ethereum/client-go  # Docker image for Geth
-    pull_policy: always  # Always pull the latest image
-    container_name: geth  # Container name
-    restart: unless-stopped  # Restart policy
+    image: ethereum/client-go
+    pull_policy: always
+    container_name: geth
+    restart: unless-stopped
     ports:
       - "8545:8545"  # JSON-RPC HTTP service
       - "8546:8546"  # JSON-RPC WebSocket service
@@ -14,10 +14,10 @@ services:
       - "30303:30303"  # P2P communication
       - "30303:30303/udp"  # P2P communication (UDP)
     volumes:
-      - /ethereum-data:/root/.ethereum  # Volume for Ethereum data
-    stop_signal: SIGINT  # Stop signal
-    stop_grace_period: 2m  # Grace period for stopping
-    healthcheck:  # Health check configuration
+      - /geth-data:/root/.geth-data
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    healthcheck:
       test: [ "CMD-SHELL", "geth attach --exec eth.blockNumber" ]
       interval: 10s
       timeout: 5s
@@ -37,26 +37,21 @@ services:
       - --graphql.vhosts=*
       - --authrpc.addr=0.0.0.0
       - --authrpc.vhosts=*
-      - --authrpc.jwtsecret=/root/.ethereum/jwt.hex
+      - --authrpc.jwtsecret=/root/.geth-data/jwt.hex
       - --authrpc.port=8551
       - --txlookuplimit=0
-    logging:  # Logging options
-      driver: json-file
-      options:
-        max-size: 2m
-        max-file: 10
 
   # Prysm Beacon Chain Configuration
-  prysm:
-    image: gcr.io/prysmaticlabs/prysm/beacon-chain  # Docker image for Prysm
-    pull_policy: always  # Always pull the latest image
-    container_name: beacon  # Container name
-    restart: unless-stopped  # Restart policy
-    stop_grace_period: 2m  # Grace period for stopping
+  beacon:
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain
+    pull_policy: always
+    container_name: beacon
+    restart: unless-stopped
+    stop_grace_period: 2m
     volumes:
-      - beacon-data:/path/in/container  # Volume for Prysm data
-      - /ethereum-data:/root/.ethereum  # Shared volume for Ethereum data
-    depends_on:  # Dependency on Geth
+      - /beacon-data:/root/.beacon-data
+      - /geth-data:/root/.geth-data
+    depends_on:
       geth:
         condition: service_healthy
     ports:
@@ -68,14 +63,15 @@ services:
       - --disable-monitoring
       - --rpc-host=0.0.0.0
       - --execution-endpoint=http://geth:8551
-      - --jwt-secret=/geth/jwt.hex
+      - --jwt-secret=/geth-data/jwt.hex
       - --rpc-host=0.0.0.0
       - --rpc-port=4000
       - --grpc-gateway-corsdomain=*
       - --grpc-gateway-host=0.0.0.0
       - --grpc-gateway-port=3500
-    logging:  # Logging options
-      driver: json-file
-      options:
-        max-size: 2m
-        max-file: 10
+
+volumes:
+  geth:
+    driver: local
+  beacon:
+    driver: local
