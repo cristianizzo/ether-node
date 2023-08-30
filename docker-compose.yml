@@ -12,6 +12,8 @@ services:
     volumes:
       - /ethereum-data:/root/.ethereum
     restart: unless-stopped
+    networks:
+      - eth-net
 
   # Grafana Service for Monitoring
   grafana:
@@ -49,6 +51,12 @@ services:
     volumes:
       - beacon-data:/path/in/container
     restart: unless-stopped
+    networks:
+      - eth-net
+
+networks:
+  eth-net:
+    driver: bridge
 
 volumes:
   grafana-storage:
