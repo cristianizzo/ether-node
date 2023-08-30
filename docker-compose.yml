@@ -39,7 +39,7 @@ services:
     restart: unless-stopped
     networks:
       - eth-net
-      -
+
   # Grafana Service for Monitoring
   grafana:
     container_name: grafana
