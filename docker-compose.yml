@@ -46,6 +46,8 @@ services:
     environment:
       - CONFIG_http-web3provider=ws://localhost:8546  # Web3 provider via WebSocket
     command: ["--accept-terms-of-use"]
+    volumes:
+      - beacon-data:/path/in/container
     restart: unless-stopped
 
 volumes:
