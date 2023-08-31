@@ -39,11 +39,7 @@ services:
       - --authrpc.jwtsecret=/root/.ethereum/jwt.hex
       - --authrpc.port=8551
       - --txlookuplimit=0
-    logging:
-      driver: json-file
-      options:
-        max-size: 2m
-        max-file: 10
+
   prysm:
     image: gcr.io/prysmaticlabs/prysm/beacon-chain
     pull_policy: always
@@ -71,8 +67,3 @@ services:
       - --grpc-gateway-corsdomain=*
       - --grpc-gateway-host=0.0.0.0
       - --grpc-gateway-port=3500
-    logging:
-      driver: json-file
-      options:
-        max-size: 2m
-        max-file: 10
