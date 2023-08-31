@@ -24,8 +24,6 @@ services:
       retries: 5
     command:
       [
-        /usr/bin/geth --datadir=/data/geth/datadir --syncmode=full --gcmode=archive  --cache=8192 --ipcdisable --maxpeers=100 --light.serve 400
-
         # Blockchain sync mode ("snap", "full" or "light")
         "--syncmode=snap",
         # Megabytes of memory allocated to internal caching
