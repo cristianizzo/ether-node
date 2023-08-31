@@ -88,7 +88,7 @@ services:
         "--grpc-gateway-corsdomain=*",
         "--grpc-gateway-host=0.0.0.0",
         "--checkpoint-sync-url=https://checkpointz.pietjepuk.net/",
-        "--genesis-beacon-api-url=https://checkpointz.pietjepuk.net/",
+        "--genesis-beacon-api-url=https://checkpointz.pietjepuk.net/"
       ]
 
 volumes:
