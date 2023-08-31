@@ -53,7 +53,7 @@ services:
         "--metrics",
         # Ethereum mainnet
         "--mainnet",
-        "--datadir=/geth-data:/data/.geth-data"
+        "--datadir=/data/.geth-data"
       ]
 
   # Prysm Beacon Chain Configuration
@@ -75,7 +75,7 @@ services:
     command:
       [
         "--accept-terms-of-use",
-        "--datadir=/beacon-data:/data/.beacon-data",
+        "--datadir=/data/.beacon-data",
         "--disable-monitoring",
         "--rpc-host=0.0.0.0",
         "--execution-endpoint=http://geth:8551",
