@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # Ethereum Geth Node Configuration
   geth:
-    image: ethereum/client-go:latest
+    image: ethereum/client-go:stable
     pull_policy: always
     container_name: geth
     restart: unless-stopped
@@ -13,6 +13,8 @@ services:
       - "8551:8551"  # Execution client API (used by beacon chain)
       - "30303:30303"  # P2P communication
       - "30303:30303/udp"  # P2P communication (UDP)
+    volumes:
+      - /data:/data/.geth-data
     stop_signal: SIGINT
     stop_grace_period: 2m
     healthcheck:
@@ -53,6 +55,9 @@ services:
     container_name: beacon
     restart: unless-stopped
     stop_grace_period: 2m
+    volumes:
+      - /data:/data/.beacon-data
+      - /data:/data/.geth-data
     depends_on:
       geth:
         condition: service_healthy
@@ -73,3 +78,8 @@ services:
         "--grpc-gateway-port=3500"
       ]
 
+volumes:
+  geth:
+    driver: local
+  beacon:
+    driver: local
