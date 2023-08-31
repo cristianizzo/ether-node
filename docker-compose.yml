@@ -82,7 +82,6 @@ services:
         "--jwt-secret=/data/.geth-data/jwt.hex",
         "--rpc-host=0.0.0.0",
         "--rpc-port=4000",
-        "--metrics-addr=0.0.0.0:8080",
         "--grpc-gateway-corsdomain=*",
         "--grpc-gateway-host=0.0.0.0",
         "--grpc-gateway-port=3500"
