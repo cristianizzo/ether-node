@@ -70,7 +70,8 @@ services:
         condition: service_healthy
     ports:
       - "4000:4000"  # gRPC server for Prysm
-      - "3500:3500"  # P2P communication for Prysm
+      - "13000:13000"  # P2P communication for Prysm
+      - "12000:12000/udp"  # P2P communication for Prysm UDP
     command:
       [
         "--accept-terms-of-use",
