@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # Ethereum Geth Node Configuration
   geth:
-    image: ethereum/client-go
+    image: ethereum/client-go:latest
     pull_policy: always
     container_name: geth
     restart: unless-stopped
