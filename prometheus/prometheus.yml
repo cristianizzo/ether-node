@@ -1,24 +1,18 @@
 global:
-  scrape_interval: 15s  # How often to scrape targets (15 seconds)
+  scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'ethereum-node'
+  - job_name: 'geth'
     static_configs:
-      - targets: ['ethereum-node:8545'] # ethereum-node
+      - targets: ['geth:8545'] # geth chain
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
 
   - job_name: 'beacon-chain'
     static_configs:
-      - targets: ['beacon-chain:4000']  # Prysm beacon chain gRPC port
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: instance
-
-  - job_name: 'grafana'
-    static_configs:
-      - targets: ['grafana:3000']  # Grafana web interface
+      - targets: ['beacon:4000']  # Prysm beacon chain gRPC port
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance

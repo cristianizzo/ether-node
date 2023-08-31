@@ -35,7 +35,7 @@ services:
         "--ws.api=eth,net,web3",
         # Enable the HTTP-RPC server
         "--http",
-        "--http.api=eth,net,web3,engine,admin",
+        "--http.api=eth,net,web3,engine,admin,metrics",
         "--http.addr=0.0.0.0",
         "--http.vhosts=*",
         "--http.corsdomain=*",
@@ -81,13 +81,41 @@ services:
         "--jwt-secret=/data/.geth-data/jwt.hex",
         "--rpc-host=0.0.0.0",
         "--rpc-port=4000",
+        "--metrics-addr=0.0.0.0:8080",
         "--grpc-gateway-corsdomain=*",
         "--grpc-gateway-host=0.0.0.0",
         "--grpc-gateway-port=3500"
       ]
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+
+  grafana:
+    build: ./grafana
+    ports:
+      - "3000:3000"  # Grafana web interface
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SERVER_HTTP_PORT=3000
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+    restart: unless-stopped
+
 volumes:
   geth:
     driver: local
   beacon:
+    driver: local
+  grafana-storage:
+    driver: local
+  prometheus-storage:
     driver: local
