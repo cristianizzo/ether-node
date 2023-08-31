@@ -55,8 +55,6 @@ services:
         "--mainnet",
         # Maximum number of network peers (network disabled if set to 0) (default: 50)
         "--maxpeers=30",
-        # Data directory for the databases and keystore (default: "/root/.ethereum")
-        "--datadir=/home/aladdin/.ethereum"
       ]
 
   # Prysm Beacon Chain Configuration
@@ -86,7 +84,8 @@ services:
         "--rpc-host=0.0.0.0",
         "--rpc-port=4000",
         "--grpc-gateway-corsdomain=*",
-        "--grpc-gateway-host=0.0.0.0"
+        "--grpc-gateway-host=0.0.0.0",
+        "--grpc-gateway-port=3500"
       ]
 
 volumes:
