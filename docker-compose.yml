@@ -48,7 +48,7 @@ services:
         "--authrpc.vhosts=*",
         "--authrpc.jwtsecret=/data/.geth-data/jwt.hex",
         "--authrpc.port=8551",
-        "--txlookuplimit=0"
+        "--txlookuplimit=0",
         # Enable metrics collection and reporting
         "--metrics",
         # Ethereum mainnet
