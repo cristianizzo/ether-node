@@ -80,7 +80,7 @@ services:
     ports:
       - "${BEACON_API_IP}:9090:9090"
     volumes:
-      - ./config/prometheus/prometheus-p.yaml:/etc/prometheus/prometheus.yml
+      - ./config/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - ./data/prometheus:/prometheus
 #
   grafana:
