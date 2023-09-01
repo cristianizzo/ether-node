@@ -35,9 +35,9 @@ http-web3provider: http://geth:8545
 
 fallback-web3provider: []
 
-historical-slasher-node: yes
+historical-slasher-node: true
 block-batch-limit: 512
 
-pyrmont: yes
+pyrmont: true
 
 # EOF
