@@ -5,7 +5,7 @@
 ##
 ############################################################
 
-accept-terms-of-use: yes
+accept-terms-of-use: true
 
 datadir: /data
 
