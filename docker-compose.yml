@@ -98,7 +98,7 @@ services:
     volumes:
       - ./config/grafana/provisioning-p:/etc/grafana/provisioning
       - ./data/grafana:/var/lib/grafana
-      - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - ./config/grafana/config.ini:/etc/grafana/config.ini:ro
     environment:
       GF_RENDERING_SERVER_URL: http://renderer:8082/render
       GF_RENDERING_CALLBACK_URL: http://grafana:3000
