@@ -64,7 +64,6 @@ services:
     stop_grace_period: 2m
     volumes:
       - /beacon-data:/data/.beacon-data
-      - /geth-data:/data/.geth-data
     depends_on:
       geth:
         condition: service_healthy
