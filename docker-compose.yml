@@ -58,66 +58,66 @@ services:
       - ./config/prysm/validator.yaml:/config/validator.yaml:ro
       - ./data/prysm/validator:/data
 
-  slasher:
-    image: gcr.io/prysmaticlabs/prysm/slasher:stable
-    container_name: slasher
-    restart: always
-    hostname: slasher
-    depends_on:
-      - beacon
-    command: --config-file=/config/slasher.yaml
-    volumes:
-      - ./config/prysm/slasher/slasher.yaml:/config/slasher.yaml:ro
-      - ./data/prysm/slasher:/data
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    user: "2000"
-    restart: on-failure
-    hostname: prometheus
-    command: --storage.tsdb.retention.time=31d --config.file=/etc/prometheus/prometheus.yml
-    ports:
-      - "${BEACON_API_IP}:9090:9090"
-    volumes:
-      - ./config/prometheus/prometheus-p.yaml:/etc/prometheus/prometheus.yml
-      - ./data/prometheus:/prometheus
-
-  grafana:
-    image: grafana/grafana:latest-ubuntu
-    container_name: grafana
-    restart: on-failure
-    hostname: grafana
-    user: "2000"
-    depends_on:
-      - stereum-init
-      - prometheus
-      - renderer
-    ports:
-      - "${BEACON_API_IP}:3000:3000"
-    volumes:
-      - ./config/grafana/provisioning-p:/etc/grafana/provisioning
-      - ./data/grafana:/var/lib/grafana
-      - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
-    environment:
-      GF_RENDERING_SERVER_URL: http://renderer:8082/render
-      GF_RENDERING_CALLBACK_URL: http://grafana:3000
-
-  renderer:
-    image: grafana/grafana-image-renderer:latest
-    container_name: renderer
-    user: "2000"
-    restart: on-failure
-    hostname: renderer
-    environment:
-      ENABLE_METRICS: 'true'
-      HTTP_PORT: 8082
-
-  node-exporter:
-    image: prom/node-exporter:latest
-    container_name: node-exporter
-    user: "2000"
-    hostname: node-exporter
+#  slasher:
+#    image: gcr.io/prysmaticlabs/prysm/slasher:stable
+#    container_name: slasher
+#    restart: always
+#    hostname: slasher
+#    depends_on:
+#      - beacon
+#    command: --config-file=/config/slasher.yaml
+#    volumes:
+#      - ./config/prysm/slasher/slasher.yaml:/config/slasher.yaml:ro
+#      - ./data/prysm/slasher:/data
+#
+#  prometheus:
+#    image: prom/prometheus:latest
+#    container_name: prometheus
+#    user: "2000"
+#    restart: on-failure
+#    hostname: prometheus
+#    command: --storage.tsdb.retention.time=31d --config.file=/etc/prometheus/prometheus.yml
+#    ports:
+#      - "${BEACON_API_IP}:9090:9090"
+#    volumes:
+#      - ./config/prometheus/prometheus-p.yaml:/etc/prometheus/prometheus.yml
+#      - ./data/prometheus:/prometheus
+#
+#  grafana:
+#    image: grafana/grafana:latest-ubuntu
+#    container_name: grafana
+#    restart: on-failure
+#    hostname: grafana
+#    user: "2000"
+#    depends_on:
+#      - stereum-init
+#      - prometheus
+#      - renderer
+#    ports:
+#      - "${BEACON_API_IP}:3000:3000"
+#    volumes:
+#      - ./config/grafana/provisioning-p:/etc/grafana/provisioning
+#      - ./data/grafana:/var/lib/grafana
+#      - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+#    environment:
+#      GF_RENDERING_SERVER_URL: http://renderer:8082/render
+#      GF_RENDERING_CALLBACK_URL: http://grafana:3000
+#
+#  renderer:
+#    image: grafana/grafana-image-renderer:latest
+#    container_name: renderer
+#    user: "2000"
+#    restart: on-failure
+#    hostname: renderer
+#    environment:
+#      ENABLE_METRICS: 'true'
+#      HTTP_PORT: 8082
+#
+#  node-exporter:
+#    image: prom/node-exporter:latest
+#    container_name: node-exporter
+#    user: "2000"
+#    hostname: node-exporter
 
 networks:
   stereum-admin:
