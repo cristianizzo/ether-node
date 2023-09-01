@@ -86,6 +86,7 @@ services:
         "--grpc-gateway-host=0.0.0.0",
         "--grpc-gateway-port=3500",
         "--suggested-fee-recipient=0x6411D9C53Ba6b59112902b7BfeBfe097F3d1ed9f",
+        "--slots-per-archive-point=256"
       ]
 
   prometheus:
