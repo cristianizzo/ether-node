@@ -1,123 +1,127 @@
-version: "3.8"
+version: "3.7"
 
 services:
-  # Ethereum Geth Node Configuration
+  stereum-init:
+    image: stereum/init:buster
+    container_name: stereum
+    restart: "no"
+    volumes:
+      - ./data/grafana:/mnt/grafana
+      - ./data/prometheus:/mnt/prometheus
+
   geth:
     image: ethereum/client-go:stable
-    pull_policy: always
     container_name: geth
-    restart: unless-stopped
+    restart: always
+    hostname: geth
+    command: --mainnet --http --http.port=8545 --http.addr=0.0.0.0 --http.vhosts="*" --allow-insecure-unlock --http.api="db,eth,net,web3,metrics,personal"
+    stop_grace_period: 5m
     ports:
-      - "8545:8545"  # JSON-RPC HTTP service
-      - "8546:8546"  # JSON-RPC WebSocket service
-      - "8551:8551"  # Execution client API (used by beacon chain)
-      - "30303:30303"  # P2P communication
-      - "30303:30303/udp"  # P2P communication (UDP)
+      - "30303:30303/tcp"
+      - "30303:30303/udp"
+      - "${BEACON_API_IP}:8545:8545"
     volumes:
-      - /geth-data:/data/.geth-data
-    stop_signal: SIGINT
-    stop_grace_period: 2m
-    healthcheck:
-      test: [ "CMD-SHELL", "geth version" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    command:
-      [
-        # Blockchain sync mode ("snap", "full" or "light")
-        "--syncmode=full",
-        # Megabytes of memory allocated to internal caching
-        "--cache=8192",
-        # Enable the WS-RPC server
-        "--ws",
-        "--ws.origins=*",
-        "--ws.addr=0.0.0.0",
-        "--ws.api=eth,net,web3",
-        # Enable the HTTP-RPC server
-        "--http",
-        "--http.api=eth,net,web3,engine,admin,metrics",
-        "--http.addr=0.0.0.0",
-        "--http.vhosts=*",
-        "--http.corsdomain=*",
-        # Enable GraphQL on the HTTP-RPC server. Note that GraphQL can only be started if an HTTP server is started as well.
-        "--graphql",
-        "--graphql.corsdomain=*",
-        "--graphql.vhosts=*",
-        # Enable RPC server
-        "--authrpc.addr=0.0.0.0",
-        "--authrpc.vhosts=*",
-        "--authrpc.jwtsecret=/data/.geth-data/jwt.hex",
-        "--authrpc.port=8551",
-        # Enable metrics collection and reporting
-        "--metrics",
-        # Ethereum mainnet
-        "--mainnet",
-        "--ipcpath=/data/.geth-data/geth.ipc"
-      ]
+      - ./data/geth:/root/.ethereum
 
-  # Prysm Beacon Chain Configuration
   beacon:
     image: gcr.io/prysmaticlabs/prysm/beacon-chain:stable
-    pull_policy: always
     container_name: beacon
-    restart: unless-stopped
-    stop_grace_period: 2m
-    volumes:
-      - /beacon-data:/data/.beacon-data
-      - /geth-data:/data/.geth-data
+    restart: always
+    hostname: beacon-chain
     depends_on:
-      geth:
-        condition: service_healthy
+      - geth
+    command: --config-file=/config/beacon.yaml
     ports:
-      - "4000:4000"  # gRPC server for Prysm
-      - "13000:13000"  # P2P communication for Prysm
-      - "12000:12000/udp"  # P2P communication for Prysm UDP
-    command:
-      [
-        "--accept-terms-of-use",
-        "--disable-monitoring",
-        "--rpc-host=0.0.0.0",
-        "--monitoring-host=0.0.0.0",
-        "--execution-endpoint=http://geth:8551",
-        "--jwt-secret=/data/.geth-data/jwt.hex",
-        "--rpc-host=0.0.0.0",
-        "--rpc-port=4000",
-        "--grpc-gateway-corsdomain=*",
-        "--grpc-gateway-host=0.0.0.0",
-        "--grpc-gateway-port=3500",
-        "--suggested-fee-recipient=0x6411D9C53Ba6b59112902b7BfeBfe097F3d1ed9f",
-        "--slots-per-archive-point=256"
-      ]
+      - "${BEACON_API_IP}:4000:4000"
+      - "13000:13000/tcp"
+      - "12000:12000/udp"
+    networks:
+      default:
+        aliases:
+          - prysm_beacon_slasher
+      stereum-admin:
+    volumes:
+      - ./config/prysm/slasher/beacon.yaml:/config/beacon.yaml:ro
+      - ./data/prysm/beacon-slasher:/data
+
+  validator:
+    image: gcr.io/prysmaticlabs/prysm/validator:stable
+    container_name: validator
+    restart: on-failure
+    hostname: validator
+    depends_on:
+      - beacon
+    command: --config-file=/config/validator.yaml
+    ports:
+      - "${BEACON_API_IP}:7500:7500/tcp" # web-ui
+    volumes:
+      - ./config/prysm/validator.yaml:/config/validator.yaml:ro
+      - ./data/prysm/validator:/data
+
+  slasher:
+    image: gcr.io/prysmaticlabs/prysm/slasher:stable
+    container_name: slasher
+    restart: always
+    hostname: slasher
+    depends_on:
+      - beacon
+    command: --config-file=/config/slasher.yaml
+    volumes:
+      - ./config/prysm/slasher/slasher.yaml:/config/slasher.yaml:ro
+      - ./data/prysm/slasher:/data
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:stable
     container_name: prometheus
+    user: "2000"
+    restart: on-failure
+    hostname: prometheus
+    command: --storage.tsdb.retention.time=31d --config.file=/etc/prometheus/prometheus.yml
     ports:
-      - "9090:9090"
+      - "${BEACON_API_IP}:9090:9090"
     volumes:
-      - ./prometheus-data:/prometheus/prometheus.yml
-    restart: unless-stopped
+      - ./config/prometheus/prometheus-p.yaml:/etc/prometheus/prometheus.yml
+      - ./data/prometheus:/prometheus
 
   grafana:
-    build: ./grafana
-    ports:
-      - "3000:3000"  # Grafana web interface
+    image: grafana/grafana:stable
+    container_name: grafana
+    restart: on-failure
+    hostname: grafana
+    user: "2000"
     depends_on:
+      - stereum-init
       - prometheus
-    environment:
-      - GF_SERVER_HTTP_PORT=3000
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - renderer
+    ports:
+      - "${BEACON_API_IP}:3000:3000"
     volumes:
-      - ./grafana-data:/var/lib/grafana
-    restart: unless-stopped
+      - ./config/grafana/provisioning-p:/etc/grafana/provisioning
+      - ./data/grafana:/var/lib/grafana
+      - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+    environment:
+      GF_RENDERING_SERVER_URL: http://renderer:8082/render
+      GF_RENDERING_CALLBACK_URL: http://grafana:3000
 
-volumes:
-  geth:
-    driver: local
-  beacon:
-    driver: local
-  grafana-storage:
-    driver: local
-  prometheus-storage:
-    driver: local
+  renderer:
+    image: grafana/grafana-image-renderer:stable
+    container_name: renderer
+    user: "2000"
+    restart: on-failure
+    hostname: renderer
+    environment:
+      ENABLE_METRICS: 'true'
+      HTTP_PORT: 8082
+
+  node-exporter:
+    image: prom/node-exporter:stable
+    container_name: node-exporter
+    user: "2000"
+    hostname: node-exporter
+
+networks:
+  stereum-admin:
+    internal: true
+  default:
+
+# EOF
