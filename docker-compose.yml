@@ -104,8 +104,8 @@ services:
       - "${BEACON_API_IP}:3000:3000" # Grafana web UI
     volumes:
       - ./config/grafana/provisioning:/etc/grafana/provisioning
-      - ./data/grafana:/var/lib/grafana
       - ./config/grafana/config.ini:/etc/grafana/config.ini:ro
+      - ./data/grafana:/var/lib/grafana
     environment:
       GF_RENDERING_SERVER_URL: http://renderer:8082/render
       GF_RENDERING_CALLBACK_URL: http://grafana:3000
