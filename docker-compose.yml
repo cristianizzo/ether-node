@@ -44,6 +44,9 @@ services:
         "--authrpc.jwtsecret=/data/jwt.hex", # // fix this
         # Enable metrics collection and reporting
         "--metrics",
+        "--pprof",
+        "--pprof.addr=0.0.0.0",
+        "--pprof.port=6060",
         # Ethereum mainnet
         "--mainnet",
       ]
@@ -53,6 +56,7 @@ services:
       - "30303:30303/udp" # P2P communication (UDP)
       - "8545:8545" # JSON-RPC HTTP service
       - "8546:8546" # WebSocket service
+      - "6060:6060" # pprof debugging and metrics
     volumes:
       - ./data/geth:/root/.ethereum
       - ./data:/data
