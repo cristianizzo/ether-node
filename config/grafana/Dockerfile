@@ -1,12 +1,6 @@
 # Use the official Grafana image as a base image
 FROM grafana/grafana:latest
 
-# Add these lines after the FROM statement
-USER root
-RUN mkdir -p /var/lib/grafana/plugins
-RUN chown -R grafana:grafana /var/lib/grafana/plugins
-USER grafana
-
 # Switch to the root user to install plugins
 USER root
 
