@@ -74,7 +74,7 @@ services:
           - prysm_beacon_slasher
       stereum-admin:
     volumes:
-      - ./config/prysm/slasher/beacon.yaml:/config/beacon.yaml:ro
+      - ./config/beacon.yaml:/config/beacon.yaml:ro
       - ./data/prysm/beacon-slasher:/data
 
   # Prysm Validator
@@ -89,7 +89,7 @@ services:
     ports:
       - "7500:7500/tcp" # Web UI
     volumes:
-      - ./config/prysm/validator.yaml:/config/validator.yaml:ro
+      - ./config/validator.yaml:/config/validator.yaml:ro
       - ./data/prysm/validator:/data
 
   # Prysm Slasher
@@ -102,7 +102,7 @@ services:
       - beacon
     command: --config-file=/config/slasher.yaml
     volumes:
-      - ./config/prysm/slasher/slasher.yaml:/config/slasher.yaml:ro
+      - ./config/slasher.yaml:/config/slasher.yaml:ro
       - ./data/prysm/slasher:/data
 
   # Prometheus for monitoring
@@ -116,7 +116,7 @@ services:
     ports:
       - "9090:9090" # Prometheus web UI
     volumes:
-      - ./config/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - ./data/prometheus:/prometheus
 
   # Grafana for visualization
