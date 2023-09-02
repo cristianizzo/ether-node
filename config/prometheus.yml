@@ -15,7 +15,7 @@ scrape_configs:
     relabel_configs:
       - source_labels: [ __address__ ]
         target_label: __metrics_path__
-        replacement: /debug/metrics
+        replacement: /debug/metrics/prometheus
   - job_name: 'validator'
     static_configs:
       - targets: ['validator:8081']
