@@ -68,7 +68,7 @@ services:
     hostname: beacon
     depends_on:
       - geth
-    command: --config-file=/config/beacon.yaml --monitoring-host=0.0.0.0 --monitoring-port=8080
+    command: --config-file=/config/beacon.yml --monitoring-host=0.0.0.0 --monitoring-port=8080
     ports:
       - "4000:4000" # gRPC server for Prysm
       - "13000:13000/tcp" # P2P communication for Prysm
