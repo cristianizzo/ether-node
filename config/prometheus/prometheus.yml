@@ -1,18 +1,26 @@
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
 
 scrape_configs:
-  - job_name: 'geth'
+  - job_name: 'validator'
     static_configs:
-      - targets: ['geth:8545'] # geth chain
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: instance
-
-  - job_name: 'beacon-chain'
+      - targets: ['validator:8081']
+  - job_name: 'beacon node'
     static_configs:
-      - targets: ['beacon:4000']  # Prysm beacon chain gRPC port
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: instance
+      - targets: ['beacon:8080']
+  - job_name: 'slasher'
+    static_configs:
+      - targets: ['slasher:8680']
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+  - job_name: 'renderer'
+    static_configs:
+      - targets: ['renderer:8082']
