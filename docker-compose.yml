@@ -82,7 +82,7 @@ services:
     volumes:
       - ./config/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - ./data/prometheus:/prometheus
-#
+
   grafana:
     image: grafana/grafana:latest-ubuntu
     container_name: grafana
