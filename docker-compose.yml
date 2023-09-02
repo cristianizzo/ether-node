@@ -16,7 +16,36 @@ services:
     container_name: geth
     restart: always
     hostname: geth
-    command: --mainnet --http --http.port=8545 --http.addr=0.0.0.0 --http.vhosts="*" --allow-insecure-unlock --http.api="db,eth,net,web3,personal,metrics,graphql,ws"
+
+    command:
+      [
+        # Blockchain sync mode ("snap", "full" or "light")
+        "--syncmode=full",
+        # Enable the WS-RPC server
+        "--ws",
+        "--ws.origins=*",
+        "--ws.addr=0.0.0.0",
+        "--ws.api=eth,net,web3",
+        # Enable the HTTP-RPC server
+        "--http",
+        "--http.api=db,eth,net,web3,personal,engine,admin,metrics,metrics,txpool",
+        "--http.addr=0.0.0.0",
+        "--http.vhosts=*",
+        "--http.corsdomain=*",
+        "--allow-insecure-unlock",
+        # Enable GraphQL on the HTTP-RPC server. Note that GraphQL can only be started if an HTTP server is started as well.
+        "--graphql",
+        "--graphql.corsdomain=*",
+        "--graphql.vhosts=*",
+        # Enable RPC server
+        "--authrpc.addr=0.0.0.0",
+        "--authrpc.vhosts=*",
+        "--authrpc.port=8551",
+        # Enable metrics collection and reporting
+        "--metrics",
+        # Ethereum mainnet
+        "--mainnet",
+      ]
     stop_grace_period: 5m
     ports:
       - "30303:30303/tcp" # P2P communication
