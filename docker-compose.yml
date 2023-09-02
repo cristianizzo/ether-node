@@ -119,7 +119,7 @@ services:
     ports:
       - "9090:9090" # Prometheus web UI
     volumes:
-      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yml
       - ./data/prometheus:/prometheus
 
   # Grafana for visualization
