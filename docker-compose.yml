@@ -1,6 +1,7 @@
 version: "3.7"
 
 services:
+  # Initialize Stereum container for Grafana and Prometheus
   stereum-init:
     image: stereum/init:buster
     container_name: stereum
@@ -9,6 +10,7 @@ services:
       - ./data/grafana:/mnt/grafana
       - ./data/prometheus:/mnt/prometheus
 
+  # Ethereum Geth client
   geth:
     image: ethereum/client-go:stable
     container_name: geth
@@ -17,12 +19,13 @@ services:
     command: --mainnet --http --http.port=8545 --http.addr=0.0.0.0 --http.vhosts="*" --allow-insecure-unlock --http.api="db,eth,net,web3,personal"
     stop_grace_period: 5m
     ports:
-      - "30303:30303/tcp"
-      - "30303:30303/udp"
-      - "${BEACON_API_IP}:8545:8545"
+      - "30303:30303/tcp" # P2P communication
+      - "30303:30303/udp" # P2P communication (UDP)
+      - "${BEACON_API_IP}:8545:8545" # JSON-RPC HTTP service
     volumes:
       - ./data/geth:/root/.ethereum
 
+  # Prysm Beacon Chain
   beacon:
     image: gcr.io/prysmaticlabs/prysm/beacon-chain:stable
     container_name: beacon
@@ -32,9 +35,9 @@ services:
       - geth
     command: --config-file=/config/beacon.yaml
     ports:
-      - "${BEACON_API_IP}:4000:4000"
-      - "13000:13000/tcp"
-      - "12000:12000/udp"
+      - "${BEACON_API_IP}:4000:4000" # gRPC server for Prysm
+      - "13000:13000/tcp" # P2P communication for Prysm
+      - "12000:12000/udp" # P2P communication for Prysm UDP
     networks:
       default:
         aliases:
@@ -44,6 +47,7 @@ services:
       - ./config/prysm/slasher/beacon.yaml:/config/beacon.yaml:ro
       - ./data/prysm/beacon-slasher:/data
 
+  # Prysm Validator
   validator:
     image: gcr.io/prysmaticlabs/prysm/validator:stable
     container_name: validator
@@ -53,11 +57,12 @@ services:
       - beacon
     command: --config-file=/config/validator.yaml
     ports:
-      - "${BEACON_API_IP}:7500:7500/tcp" # web-ui
+      - "${BEACON_API_IP}:7500:7500/tcp" # Web UI
     volumes:
       - ./config/prysm/validator.yaml:/config/validator.yaml:ro
       - ./data/prysm/validator:/data
 
+  # Prysm Slasher
   slasher:
     image: gcr.io/prysmaticlabs/prysm/slasher:stable
     container_name: slasher
@@ -69,54 +74,58 @@ services:
     volumes:
       - ./config/prysm/slasher/slasher.yaml:/config/slasher.yaml:ro
       - ./data/prysm/slasher:/data
-#
+
+  # Prometheus for monitoring
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
-    user: "2000"
+    user: "ubuntu"
     restart: on-failure
     hostname: prometheus
     command: --storage.tsdb.retention.time=31d --config.file=/etc/prometheus/prometheus.yml
     ports:
-      - "${BEACON_API_IP}:9090:9090"
+      - "${BEACON_API_IP}:9090:9090" # Prometheus web UI
     volumes:
       - ./config/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - ./data/prometheus:/prometheus
 
+  # Grafana for visualization
   grafana:
     image: grafana/grafana:latest-ubuntu
     container_name: grafana
     restart: on-failure
     hostname: grafana
-    user: "2000"
+    user: "ubuntu"
     depends_on:
       - stereum-init
       - prometheus
       - renderer
     ports:
-      - "${BEACON_API_IP}:3000:3000"
+      - "${BEACON_API_IP}:3000:3000" # Grafana web UI
     volumes:
-      - ./config/grafana/provisioning-p:/etc/grafana/provisioning
+      - ./config/grafana/provisioning:/etc/grafana/provisioning
       - ./data/grafana:/var/lib/grafana
       - ./config/grafana/config.ini:/etc/grafana/config.ini:ro
     environment:
       GF_RENDERING_SERVER_URL: http://renderer:8082/render
       GF_RENDERING_CALLBACK_URL: http://grafana:3000
 
+  # Grafana image renderer
   renderer:
     image: grafana/grafana-image-renderer:latest
     container_name: renderer
-    user: "2000"
+    user: "ubuntu"
     restart: on-failure
     hostname: renderer
     environment:
       ENABLE_METRICS: 'true'
       HTTP_PORT: 8082
 
+  # Node Exporter for system metrics
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
-    user: "2000"
+    user: "ubuntu"
     hostname: node-exporter
 
 networks:

@@ -31,6 +31,7 @@ p2p-max-peers: 100
 
 ##############################
 # Connection to geth container
+execution-endpoint: http://geth:8551
 http-web3provider: http://geth:8545
 
 fallback-web3provider: []
@@ -38,5 +39,9 @@ fallback-web3provider: []
 block-batch-limit: 512
 
 pyrmont: yes
+
+##############################
+# Connection to geth container
+suggested-fee-recipient: 0x6411D9C53Ba6b59112902b7BfeBfe097F3d1ed9f
 
 # EOF
