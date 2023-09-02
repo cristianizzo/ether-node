@@ -41,6 +41,7 @@ services:
         "--authrpc.addr=0.0.0.0",
         "--authrpc.vhosts=*",
         "--authrpc.port=8551",
+        "--authrpc.jwtsecret=jwt.hex",
         # Enable metrics collection and reporting
         "--metrics",
         # Ethereum mainnet

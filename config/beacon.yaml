@@ -33,6 +33,7 @@ p2p-max-peers: 100
 # Connection to geth container
 execution-endpoint: http://geth:8551
 http-web3provider: http://geth:8545
+jwt-secret: jwt.hex
 
 fallback-web3provider: []
 
