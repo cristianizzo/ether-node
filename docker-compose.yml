@@ -43,7 +43,7 @@ services:
         "--authrpc.vhosts=*",
         "--authrpc.port=8551",
         "--authrpc.jwtsecret=/data/jwt.hex", # // fix this
-        # Enable metrics collection and reporting
+        # Enables metrics collection and reporting
         "--metrics",
         "--pprof",
         "--pprof.addr=0.0.0.0",
