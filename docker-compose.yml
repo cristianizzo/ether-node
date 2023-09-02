@@ -16,7 +16,6 @@ services:
     container_name: geth
     restart: always
     hostname: geth
-
     command:
       [
         # Blockchain sync mode ("snap", "full" or "light")
@@ -69,11 +68,12 @@ services:
     hostname: beacon
     depends_on:
       - geth
-    command: --config-file=/config/beacon.yml
+    command: --config-file=/config/beacon.yaml --monitoring-host=0.0.0.0 --monitoring-port=8080
     ports:
       - "4000:4000" # gRPC server for Prysm
       - "13000:13000/tcp" # P2P communication for Prysm
       - "12000:12000/udp" # P2P communication for Prysm UDP
+      - "8080:8080" # Prometheus metrics
     networks:
       default:
         aliases:
