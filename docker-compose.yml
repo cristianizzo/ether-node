@@ -103,7 +103,6 @@ services:
     ports:
       - "${BEACON_API_IP}:3000:3000" # Grafana web UI
     volumes:
-      - ./config/grafana/provisioning:/etc/grafana/provisioning
       - ./config/grafana/config.ini:/etc/grafana/config.ini:ro
       - ./data/grafana:/var/lib/grafana
     environment:
