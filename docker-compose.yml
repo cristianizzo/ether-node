@@ -20,6 +20,8 @@ services:
       [
         # Blockchain sync mode ("snap", "full" or "light")
         # "--syncmode=full",
+        # Ethereum mainnet
+        "--mainnet",
         # Enable the WS-RPC server
         "--ws",
         "--ws.origins=*",
@@ -46,8 +48,9 @@ services:
         "--pprof",
         "--pprof.addr=0.0.0.0",
         "--pprof.port=6060",
-        # Ethereum mainnet
-        "--mainnet",
+        # Monitoring host and port options
+        "--monitoring-host=0.0.0.0",
+        "--monitoring-port=8690",
       ]
     stop_grace_period: 5m
     ports:
@@ -56,6 +59,7 @@ services:
       - "8545:8545" # JSON-RPC HTTP service
       - "8546:8546" # WebSocket service
       - "6060:6060" # pprof debugging and metrics
+      - "8690:8690" # monitoring metrics
     volumes:
       - ./data/geth:/root/.ethereum
       - ./data:/data
