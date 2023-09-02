@@ -78,7 +78,7 @@ services:
     volumes:
       - ./config/beacon.yaml:/config/beacon.yaml:ro
       - ./data/prysm/beacon-slasher:/data
-      - ./data:/data
+      - ./data/jwt.hex:/data/jwt.hex:ro
 
   # Prysm Validator
   validator:
