@@ -17,10 +17,33 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
-  "iteration": 1591864806111,
+  "id": 21,
+  "iteration": 1605638084225,
   "links": [],
   "panels": [
+    {
+      "content": "\n## Presentation\n-----\nWelcome to my dashboard!\n\nEnsure to update your grafana to the version 7.0.1 or more. Previous version won't have everything working properly.\n\nIf you face any issue to understand a panel or to know what to do, make sure to read the small note on the corner top left of the panel if there is one!\n\n\n## Fiat converter\n-----\nThe currency converter allow you to see the earning for one of the currency in the dropdown list.\nThe value `All` equals to `ETH`. To have access to the currency converter, you can find how in this [guide](https://docs.prylabs.network/docs/prysm-usage/monitoring/currency-converter/)\n\n&nbsp;  \nYou can get the currencies you want, but the currency correctly displayed in the earning panels are:\n`BTC, CHF, CAD, EUR, USD, JPY, GBP`  \nIf you want to display correctly another currency that the one in the previous list, you can create a [git issue](https://github.com/GuillaumeMiralles/prysm-grafana-dashboard/issues) or you can DM me on discord (**Ocaa/grums** in prysm discord)\n\n## Earning panels exceptions\n-----\nThe earning panels are supposing that you have done deposits of 32 ETH exactly. If you see some incoherence in this values it's probably because you have deposited more than 32 ETH.\nIf so, you can fix the total earning panel by adding at the end of the query the substraction of your excedend 32 ETH. For the others earning panels (hourly daily weekly monthly),\nit will be fixed by itself with time, but you can still fix it temporarily by doing the same job than on the total earning panel (then don't forget to remove your temporarily fix once it has been fixed automatically)\n\n##### Total earning fix\n-----\nIf you sent 32.5 ETH on each validator and you have 5 validators, the total earning query will look like\n```\nsum(validator_balance) - count(validator_balance > 16 and validator_statuses == 3)*32 - 0.5*5\n```\n\nTo edit a panel, left click on the panel title then chose edit, then ensure to save the dashboard !\n\n\n## Support\n-----\nIf you enjoy the dashboard and you want to tip me for the work, you can send ETH and ERC20 token at this address **0xbDf75af14F356c381eC63329a4aB1C55D5c13fc5**\n\n\n\n## Bug\n-----\nIf you find a bug, please report it to me on discord, Ocaa/grums. I'm foundable on the prysm discord then dm me directly. I'll try to give a fix and update the dashboard !\nThanks for all the reports\n\n&nbsp;\n\nAfter reading it, you can now delete me. And don't forget to save the dashboard after deleting me! (button on the upper right) :)\n\nEnjoy\n\n\n\n",
+      "datasource": "Prometheus",
+      "description": "To delete this panel: left click on the title, then chose remove",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 27,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 63,
+      "mode": "markdown",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "README",
+      "type": "text"
+    },
     {
       "cacheTimeout": null,
       "colorBackground": true,
@@ -1250,7 +1273,7 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 10,
-        "w": 8,
+        "w": 10,
         "x": 0,
         "y": 31
       },
@@ -1330,110 +1353,6 @@
       }
     },
     {
-      "aliasColors": {
-        "0x8926562b": "blue",
-        "0xa92dcbcf": "orange",
-        "0xafafbadf": "rgb(189, 181, 0)",
-        "0xb96135dd": "purple"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 10,
-        "w": 8,
-        "x": 8,
-        "y": 31
-      },
-      "hiddenSeries": false,
-      "id": 2,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "label_replace(validator_balance > 16, \"pubkey\", \"$1\", \"pubkey\", \"(.{10}).*\")",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{pubkey}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Validator balance",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "decimals": 4,
-          "format": "short",
-          "label": "ETH",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "decimals": null,
-          "format": "short",
-          "label": "",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
       "columns": [],
       "datasource": "Prometheus",
       "description": "",
@@ -1445,9 +1364,9 @@
       },
       "fontSize": "100%",
       "gridPos": {
-        "h": 5,
-        "w": 8,
-        "x": 16,
+        "h": 20,
+        "w": 6,
+        "x": 10,
         "y": 31
       },
       "id": 22,
@@ -1600,10 +1519,10 @@
       },
       "fontSize": "100%",
       "gridPos": {
-        "h": 5,
+        "h": 20,
         "w": 8,
         "x": 16,
-        "y": 36
+        "y": 31
       },
       "id": 20,
       "pageSize": null,
@@ -1828,6 +1747,110 @@
       "type": "table-old"
     },
     {
+      "aliasColors": {
+        "0x8926562b": "blue",
+        "0xa92dcbcf": "orange",
+        "0xafafbadf": "rgb(189, 181, 0)",
+        "0xb96135dd": "purple"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 0,
+        "y": 41
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "label_replace(validator_balance > 16, \"pubkey\", \"$1\", \"pubkey\", \"(.{10}).*\")",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{pubkey}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Validator balance",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 4,
+          "format": "short",
+          "label": "ETH",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "decimals": null,
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "cacheTimeout": null,
       "colorBackground": true,
       "colorValue": false,
@@ -1855,7 +1878,7 @@
         "h": 1,
         "w": 8,
         "x": 0,
-        "y": 41
+        "y": 51
       },
       "id": 59,
       "interval": null,
@@ -1905,7 +1928,7 @@
       "thresholds": "0,0",
       "timeFrom": null,
       "timeShift": null,
-      "title": "BOTH",
+      "title": "Change title's section from BOTH to HARDWARE USAGE",
       "type": "singlestat",
       "valueFontSize": "20%",
       "valueMaps": [
@@ -1945,7 +1968,7 @@
         "h": 1,
         "w": 11,
         "x": 8,
-        "y": 41
+        "y": 51
       },
       "id": 30,
       "interval": null,
@@ -2036,7 +2059,7 @@
         "h": 1,
         "w": 5,
         "x": 19,
-        "y": 41
+        "y": 51
       },
       "id": 41,
       "interval": null,
@@ -2106,9 +2129,6 @@
         "beacon node": "rgb(68, 218, 252)",
         "memory beacon node": "rgb(96, 252, 255)",
         "memory validator": "rgb(255, 255, 160)",
-        "test": "green",
-        "test beacon node": "orange",
-        "test validator": "green",
         "validator": "yellow"
       },
       "bars": false,
@@ -2127,12 +2147,12 @@
         "h": 10,
         "w": 8,
         "x": 0,
-        "y": 42
+        "y": 52
       },
       "hiddenSeries": false,
       "id": 32,
       "legend": {
-        "alignAsTable": false,
+        "alignAsTable": true,
         "avg": false,
         "current": true,
         "hideEmpty": false,
@@ -2175,16 +2195,22 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg_over_time(go_memstats_alloc_bytes{job=\"$node_job\"}[1m:5s])",
+          "expr": "avg_over_time(process_resident_memory_bytes{job=\"$node_job\"}[1m:5s])",
           "interval": "",
           "legendFormat": "memory {{job}}",
           "refId": "A"
         },
         {
-          "expr": "avg_over_time(go_memstats_alloc_bytes{job=\"$validator_job\"}[1m:5s])",
+          "expr": "avg_over_time(process_resident_memory_bytes{job=\"$validator_job\"}[1m:5s])",
           "interval": "",
           "legendFormat": "memory {{job}}",
           "refId": "C"
+        },
+        {
+          "expr": "avg_over_time(process_resident_memory_bytes{job=\"$slasher_job\"}[1m:5s])",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "D"
         },
         {
           "expr": "((process_cpu_seconds_total - process_cpu_seconds_total offset 2m) > 0)*100/120/go_maxprocs",
@@ -2269,7 +2295,7 @@
         "h": 10,
         "w": 8,
         "x": 8,
-        "y": 42
+        "y": 52
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -2326,7 +2352,7 @@
           "refId": "C"
         },
         {
-          "expr": "total_voted_target_balances/total_eligible_balances*100",
+          "expr": "beacon_prev_epoch_target_gwei/beacon_prev_epoch_active_gwei*100",
           "instant": false,
           "interval": "",
           "legendFormat": "Participation rate",
@@ -2409,7 +2435,7 @@
         "h": 2,
         "w": 3,
         "x": 16,
-        "y": 42
+        "y": 52
       },
       "id": 56,
       "links": [],
@@ -2455,7 +2481,7 @@
         "h": 10,
         "w": 5,
         "x": 19,
-        "y": 42
+        "y": 52
       },
       "id": 24,
       "limit": 10,
@@ -2502,7 +2528,7 @@
         "h": 2,
         "w": 3,
         "x": 16,
-        "y": 44
+        "y": 54
       },
       "id": 26,
       "links": [],
@@ -2566,7 +2592,7 @@
         "h": 2,
         "w": 3,
         "x": 16,
-        "y": 46
+        "y": 56
       },
       "id": 34,
       "links": [],
@@ -2643,7 +2669,7 @@
         "h": 4,
         "w": 3,
         "x": 16,
-        "y": 48
+        "y": 58
       },
       "id": 40,
       "options": {
@@ -2738,7 +2764,7 @@
         "h": 1,
         "w": 5,
         "x": 19,
-        "y": 52
+        "y": 62
       },
       "hiddenSeries": false,
       "id": 61,
@@ -2887,7 +2913,7 @@
         "h": 1,
         "w": 5,
         "x": 19,
-        "y": 53
+        "y": 63
       },
       "hiddenSeries": false,
       "id": 28,
@@ -2997,6 +3023,29 @@
               "type": "avg"
             },
             "type": "query"
+          },
+          {
+            "evaluator": {
+              "params": [
+                0.9
+              ],
+              "type": "lt"
+            },
+            "operator": {
+              "type": "or"
+            },
+            "query": {
+              "params": [
+                "B",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
           }
         ],
         "executionErrorState": "alerting",
@@ -3029,7 +3078,7 @@
         "h": 1,
         "w": 5,
         "x": 19,
-        "y": 54
+        "y": 64
       },
       "hiddenSeries": false,
       "id": 44,
@@ -3203,7 +3252,7 @@
         "h": 1,
         "w": 5,
         "x": 19,
-        "y": 55
+        "y": 65
       },
       "hiddenSeries": false,
       "id": 48,
@@ -3371,7 +3420,7 @@
         "h": 1,
         "w": 5,
         "x": 19,
-        "y": 56
+        "y": 66
       },
       "hiddenSeries": false,
       "id": 52,
@@ -3523,7 +3572,7 @@
         "h": 1,
         "w": 5,
         "x": 19,
-        "y": 57
+        "y": 67
       },
       "hiddenSeries": false,
       "id": 50,
@@ -3646,7 +3695,7 @@
         "for": "0m",
         "frequency": "1m",
         "handler": 1,
-        "message": "NETWORK ALERT: THE PARTICIPATION RATE IS BELOW 66%! You will start to get penalties until the rate rise up above 66% again. This alert doesn't require any action from you",
+        "message": "NETWORK ALERT: THE PARTICIPATION RATE IS BELOW 66%! You won't get any reward until the participation rate rise up above 66% again. This alert doesn't require any action from you",
         "name": "NETWORK: Participation rate below 66%",
         "noDataState": "ok",
         "notifications": [
@@ -3672,7 +3721,7 @@
         "h": 1,
         "w": 5,
         "x": 19,
-        "y": 58
+        "y": 68
       },
       "hiddenSeries": false,
       "id": 65,
@@ -3701,7 +3750,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "total_voted_target_balances/total_eligible_balances*100",
+          "expr": "beacon_prev_epoch_target_gwei/beacon_prev_epoch_active_gwei*100",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -3785,7 +3834,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "validator",
           "value": "validator"
         },
@@ -3849,7 +3898,7 @@
     ]
   },
   "timezone": "",
-  "title": "ETH staking dashboard",
-  "uid": "t2yHaa3Zz",
-  "version": 99
+  "title": "ETH staking dashboard lot keys",
+  "uid": "t2yHaa3Zz3lot",
+  "version": 3
 }
