@@ -42,7 +42,7 @@ services:
         "--authrpc.addr=0.0.0.0",
         "--authrpc.vhosts=*",
         "--authrpc.port=8551",
-        "--authrpc.jwtsecret=/data/jwt.hex", # // fix this
+        "--authrpc.jwtsecret=/data/jwt.hex",
         # Enables metrics collection and reporting
         "--metrics",
         "--pprof",

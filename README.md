@@ -55,19 +55,27 @@ This repository provides the configuration files and instructions to set up an E
 
 6. Access Services:
 
-    - Ethereum Geth: Access the Ethereum node at `http://localhost:8545` for JSON-RPC and `ws://localhost:8546` for WebSocket communication.
+    - **Ethereum Geth**:
+        - JSON-RPC: `http://35.180.188.198:8545/`
+        - GraphQL: `http://35.180.188.198:8545/graphql`
+        - GraphQL UI: `http://35.180.188.198:8545/graphql/ui`
+        - WebSocket: `ws://35.180.188.198:8546`
 
-    - Prysm Beacon Chain: Access the Beacon Chain service at `http://localhost:4000`.
+    - **Prysm Beacon Chain**: Access the Beacon Chain service at `http://35.180.188.198:4000`.
 
-    - Grafana: Access the Grafana web UI at `http://localhost:3000`. Use the default credentials `admin/admin` to log in.
+    - **Prometheus**: Access the Prometheus web UI at `http://35.180.188.198:9090/`.
 
-    - Prometheus: Access the Prometheus web UI at `http://localhost:9090`.
+    - **Grafana**: Access the Grafana web UI at `http://35.180.188.198:3000`. Use the default credentials `admin/admin` to log in.
+
+    - **gRPC**: Access the gRPC server for Prysm at `http://35.180.188.198:4000`.
 
 7. Grafana Configuration:
 
     - Log in to Grafana using the default credentials.
     - Import dashboards from the community or create custom dashboards to visualize Ethereum and Prysm metrics.
     - Configure data sources to integrate Prometheus with Grafana.
+
+8. **Note**: It is not recommended to expose certain endpoints such as sensitive RPC interfaces to public networks without proper security measures in place.
 
 ## Customization and Further Steps
 
