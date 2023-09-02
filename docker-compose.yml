@@ -20,7 +20,7 @@ services:
     command:
       [
         # Blockchain sync mode ("snap", "full" or "light")
-        "--syncmode=full",
+        # "--syncmode=full",
         # Enable the WS-RPC server
         "--ws",
         "--ws.origins=*",
