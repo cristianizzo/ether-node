@@ -16,7 +16,7 @@ services:
     container_name: geth
     restart: always
     hostname: geth
-    command: --mainnet --http --http.port=8545 --http.addr=0.0.0.0 --http.vhosts="*" --allow-insecure-unlock --http.api="db,eth,net,web3,personal,metrics --graphq --ws --metrics"
+    command: --mainnet --http --http.port=8545 --http.addr=0.0.0.0 --http.vhosts="*" --allow-insecure-unlock --http.api="db,eth,net,web3,personal,metrics,graphql,ws"
     stop_grace_period: 5m
     ports:
       - "30303:30303/tcp" # P2P communication
