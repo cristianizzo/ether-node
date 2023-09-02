@@ -65,7 +65,7 @@ services:
     hostname: beacon
     depends_on:
       - geth
-    command: --config-file=/config/beacon.yaml
+    command: --config-file=/config/beacon.yml
     ports:
       - "4000:4000" # gRPC server for Prysm
       - "13000:13000/tcp" # P2P communication for Prysm
@@ -76,7 +76,7 @@ services:
           - prysm_beacon_slasher
       stereum-admin:
     volumes:
-      - ./config/beacon.yaml:/config/beacon.yaml:ro
+      - ./config/beacon.yml:/config/beacon.yml:ro
       - ./data/prysm/beacon-slasher:/data
       - ./data/jwt.hex:/data/jwt.hex:ro
 
@@ -88,11 +88,11 @@ services:
     hostname: validator
     depends_on:
       - beacon
-    command: --config-file=/config/validator.yaml
+    command: --config-file=/config/validator.yml
     ports:
       - "7500:7500/tcp" # Web UI
     volumes:
-      - ./config/validator.yaml:/config/validator.yaml:ro
+      - ./config/validator.yml:/config/validator.yml:ro
       - ./data/prysm/validator:/data
 
   # Prysm Slasher
@@ -103,9 +103,9 @@ services:
     hostname: slasher
     depends_on:
       - beacon
-    command: --config-file=/config/slasher.yaml
+    command: --config-file=/config/slasher.yml
     volumes:
-      - ./config/slasher.yaml:/config/slasher.yaml:ro
+      - ./config/slasher.yml:/config/slasher.yml:ro
       - ./data/prysm/slasher:/data
 
   # Prometheus for monitoring
@@ -119,7 +119,7 @@ services:
     ports:
       - "9090:9090" # Prometheus web UI
     volumes:
-      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./data/prometheus:/prometheus
 
   # Grafana for visualization
