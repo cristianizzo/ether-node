@@ -21,7 +21,8 @@ services:
     ports:
       - "30303:30303/tcp" # P2P communication
       - "30303:30303/udp" # P2P communication (UDP)
-      - "${BEACON_API_IP}:8545:8545" # JSON-RPC HTTP service
+      - "8545:8545" # JSON-RPC HTTP service
+      - "8546:8546" # WebSocket service
     volumes:
       - ./data/geth:/root/.ethereum
 
@@ -35,7 +36,7 @@ services:
       - geth
     command: --config-file=/config/beacon.yaml
     ports:
-      - "${BEACON_API_IP}:4000:4000" # gRPC server for Prysm
+      - "4000:4000" # gRPC server for Prysm
       - "13000:13000/tcp" # P2P communication for Prysm
       - "12000:12000/udp" # P2P communication for Prysm UDP
     networks:
@@ -57,7 +58,7 @@ services:
       - beacon
     command: --config-file=/config/validator.yaml
     ports:
-      - "${BEACON_API_IP}:7500:7500/tcp" # Web UI
+      - "7500:7500/tcp" # Web UI
     volumes:
       - ./config/prysm/validator.yaml:/config/validator.yaml:ro
       - ./data/prysm/validator:/data
@@ -84,7 +85,7 @@ services:
     hostname: prometheus
     command: --storage.tsdb.retention.time=31d --config.file=/etc/prometheus/prometheus.yml
     ports:
-      - "${BEACON_API_IP}:9090:9090" # Prometheus web UI
+      - "9090:9090" # Prometheus web UI
     volumes:
       - ./config/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - ./data/prometheus:/prometheus
@@ -101,7 +102,7 @@ services:
       - prometheus
       - renderer
     ports:
-      - "${BEACON_API_IP}:3000:3000" # Grafana web UI
+      - "3000:3000" # Grafana web UI
     volumes:
       - ./config/grafana/config.ini:/etc/grafana/config.ini:ro
       - ./data/grafana:/var/lib/grafana
