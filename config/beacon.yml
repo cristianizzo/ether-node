@@ -33,4 +33,6 @@ pyrmont: true
 # Connection to geth container
 suggested-fee-recipient: 0x6411D9C53Ba6b59112902b7BfeBfe097F3d1ed9f
 
+checkpoint-sync-url: 'https://beaconstate.info'
+
 # EOF
