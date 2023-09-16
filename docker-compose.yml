@@ -18,32 +18,20 @@ services:
     hostname: geth
     command:
       [
-        # Blockchain sync mode ("snap", "full" or "light")
-        # "--syncmode=full",
-        # Ethereum mainnet
         "--mainnet",
-        # Enable the WS-RPC server
         "--ws",
         "--ws.origins=*",
         "--ws.addr=0.0.0.0",
-        "--ws.api=eth,net,web3",
-        # Enable the HTTP-RPC server
+        "--ws.api=db,eth,net,web3,personal,txpool",
         "--http",
-        "--http.api=db,eth,net,web3,personal,engine,admin,metrics,metrics,txpool",
+        "--http.api=db,eth,net,web3,personal,engine,admin,metrics,txpool",
         "--http.addr=0.0.0.0",
         "--http.vhosts=*",
         "--http.corsdomain=*",
         "--allow-insecure-unlock",
-        # Enable GraphQL on the HTTP-RPC server. Note that GraphQL can only be started if an HTTP server is started as well.
         "--graphql",
         "--graphql.corsdomain=*",
         "--graphql.vhosts=*",
-        # Enable RPC server
-        "--authrpc.addr=0.0.0.0",
-        "--authrpc.vhosts=*",
-        "--authrpc.port=8551",
-        "--authrpc.jwtsecret=/data/jwt.hex",
-        # Enables metrics collection and reporting
         "--metrics",
         "--pprof",
         "--pprof.addr=0.0.0.0",
@@ -51,7 +39,6 @@ services:
       ]
     stop_grace_period: 5m
     ports:
-      - "30303:30303/tcp" # P2P communication
       - "30303:30303/udp" # P2P communication (UDP)
       - "8545:8545" # JSON-RPC HTTP service
       - "8546:8546" # WebSocket service
